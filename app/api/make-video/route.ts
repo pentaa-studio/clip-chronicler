@@ -11,12 +11,14 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
-// Binary paths - will be downloaded at runtime on Vercel or use system binaries
+// Binary paths - use system binaries on Vercel, local binaries on development
 const BIN = {
-  ffmpeg: fs.existsSync(path.join(process.cwd(), 'bin', 'ffmpeg')) ? 
-          path.join(process.cwd(), 'bin', 'ffmpeg') : 'ffmpeg',
-  ytdlp:  fs.existsSync(path.join(process.cwd(), 'bin', 'yt-dlp')) ? 
-          path.join(process.cwd(), 'bin', 'yt-dlp') : 'yt-dlp',
+  ffmpeg: process.env.VERCEL ? 'ffmpeg' : 
+          (fs.existsSync(path.join(process.cwd(), 'bin', 'ffmpeg')) ? 
+           path.join(process.cwd(), 'bin', 'ffmpeg') : 'ffmpeg'),
+  ytdlp:  process.env.VERCEL ? 'yt-dlp' : 
+          (fs.existsSync(path.join(process.cwd(), 'bin', 'yt-dlp')) ? 
+           path.join(process.cwd(), 'bin', 'yt-dlp') : 'yt-dlp'),
 }
 const FONT = path.join(process.cwd(), 'assets', 'font.ttf')
 
@@ -61,8 +63,10 @@ function exec(cmd: string, args: string[]) {
 
 export async function GET(req: Request) {
   try {
-    // Initialize binaries on Vercel
-    await initBinaries()
+    // Initialize binaries only in development
+    if (!process.env.VERCEL) {
+      await initBinaries()
+    }
     
     const { searchParams } = new URL(req.url)
     const videoId = searchParams.get('videoId')!
