@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "app/api/make-video/route.ts": {
+      "maxDuration": 60
+    }
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }
+}
