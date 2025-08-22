@@ -51,7 +51,20 @@ def make_video():
             ydl_opts = {
                 'format': 'best[height<=720]',
                 'outtmpl': os.path.join(temp_dir, 'video.%(ext)s'),
-                'quiet': True
+                'quiet': True,
+                'no_check_certificate': True,
+                'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'extractor_args': {
+                    'youtube': {
+                        'skip': ['dash', 'live'],
+                    }
+                },
+                'http_headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-us,en;q=0.5',
+                    'Sec-Fetch-Mode': 'navigate',
+                }
             }
             
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
