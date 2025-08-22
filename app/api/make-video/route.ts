@@ -17,8 +17,9 @@ const BIN = {
           (fs.existsSync(path.join(process.cwd(), 'bin', 'ffmpeg')) ? 
            path.join(process.cwd(), 'bin', 'ffmpeg') : 'ffmpeg'),
   ytdlp:  process.env.VERCEL ? 'yt-dlp' : 
-          (fs.existsSync(path.join(process.cwd(), 'bin', 'yt-dlp')) ? 
-           path.join(process.cwd(), 'bin', 'yt-dlp') : 'yt-dlp'),
+          (process.env.K_SERVICE ? '/opt/venv/bin/yt-dlp' : // Cloud Run
+           (fs.existsSync(path.join(process.cwd(), 'bin', 'yt-dlp')) ? 
+            path.join(process.cwd(), 'bin', 'yt-dlp') : 'yt-dlp')),
 }
 const FONT = path.join(process.cwd(), 'assets', 'font.ttf')
 
