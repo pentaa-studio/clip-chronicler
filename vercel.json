@@ -1,7 +1,7 @@
 {
   "functions": {
     "app/api/make-video/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 900
     }
   },
   "build": {
