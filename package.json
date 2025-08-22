@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node bin/download-binaries.js && next build",
     "start": "next start"
   },
   "dependencies": {

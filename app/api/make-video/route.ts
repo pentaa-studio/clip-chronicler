@@ -11,11 +11,34 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
+// Binary paths - will be downloaded at runtime on Vercel
 const BIN = {
   ffmpeg: path.join(process.cwd(), 'bin', 'ffmpeg'),
   ytdlp:  path.join(process.cwd(), 'bin', 'yt-dlp'),
 }
 const FONT = path.join(process.cwd(), 'assets', 'font.ttf')
+
+// Download binary if not exists (for Vercel deployment)
+async function ensureBinary(name: string, url: string, binPath: string) {
+  if (!fs.existsSync(binPath)) {
+    console.log(`Downloading ${name} from ${url}...`)
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`Failed to download ${name}`)
+    
+    const buffer = await response.arrayBuffer()
+    fs.writeFileSync(binPath, Buffer.from(buffer))
+    fs.chmodSync(binPath, 0o755)
+    console.log(`${name} downloaded successfully`)
+  }
+}
+
+// Initialize binaries on Vercel
+async function initBinaries() {
+  if (process.env.VERCEL) {
+    await ensureBinary('ffmpeg', 'https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz', BIN.ffmpeg)
+    await ensureBinary('yt-dlp', 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp', BIN.ytdlp)
+  }
+}
 
 function exec(cmd: string, args: string[]) {
   return new Promise<void>((resolve, reject) => {
@@ -36,6 +59,9 @@ function exec(cmd: string, args: string[]) {
 
 export async function GET(req: Request) {
   try {
+    // Initialize binaries on Vercel
+    await initBinaries()
+    
     const { searchParams } = new URL(req.url)
     const videoId = searchParams.get('videoId')!
     const start    = searchParams.get('start') || '0'        // seconds (ex 30)

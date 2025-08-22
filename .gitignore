@@ -48,9 +48,10 @@ coverage/
 *.temp
 
 # Binary files (keep them for now as they're needed for the project)
-# bin/ffmpeg
-# bin/yt-dlp
-# assets/font.ttf
+# Binaries (will be downloaded at build time on Vercel)
+bin/ffmpeg
+bin/yt-dlp
+bin/ffmpeg.tar.xz
 
 # But ignore any other binary files
 *.exe
