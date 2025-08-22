@@ -34,16 +34,17 @@ async function main() {
     const platform = process.platform
     const arch = process.arch
     
-    let ffmpegUrl
-    if (platform === 'darwin' && arch === 'arm64') {
+    let ffmpegUrl, ffmpegFile
+    if (platform === 'darwin') {
       ffmpegUrl = 'https://evermeet.cx/ffmpeg/getrelease/zip'
-    } else if (platform === 'darwin' && arch === 'x64') {
-      ffmpegUrl = 'https://evermeet.cx/ffmpeg/getrelease/zip'
+      ffmpegFile = 'ffmpeg.zip'
     } else {
+      // Linux (Vercel) - use static build
       ffmpegUrl = 'https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz'
+      ffmpegFile = 'ffmpeg.tar.xz'
     }
     
-    await downloadFile(ffmpegUrl, `${BIN_DIR}/ffmpeg.zip`)
+    await downloadFile(ffmpegUrl, `${BIN_DIR}/${ffmpegFile}`)
     
     // Extract ffmpeg
     console.log('Extracting ffmpeg...')
@@ -51,12 +52,13 @@ async function main() {
       execSync(`cd ${BIN_DIR} && unzip -o ffmpeg.zip`)
       execSync(`cd ${BIN_DIR} && rm ffmpeg.zip`)
     } else {
-      execSync(`cd ${BIN_DIR} && tar -xf ffmpeg.tar.xz`)
+      // Linux (Vercel)
+      execSync(`cd ${BIN_DIR} && tar -xf ${ffmpegFile}`)
       // Find and move ffmpeg binary
       execSync(`cd ${BIN_DIR} && find . -name "ffmpeg" -type f -exec mv {} . \\;`)
       // Remove extracted directory
       execSync(`cd ${BIN_DIR} && rm -rf ffmpeg-*`)
-      execSync(`cd ${BIN_DIR} && rm ffmpeg.tar.xz`)
+      execSync(`cd ${BIN_DIR} && rm ${ffmpegFile}`)
     }
     console.log('✓ ffmpeg extracted')
     
