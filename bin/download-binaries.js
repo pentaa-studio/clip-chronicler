@@ -24,6 +24,15 @@ async function main() {
     // Create bin directory if it doesn't exist
     execSync('mkdir -p bin')
     
+    // Check if we're in a Python environment (Docker/Vercel with Python)
+    try {
+      execSync('python3 --version', { stdio: 'ignore' })
+      console.log('Python3 detected, skipping binary downloads (using system yt-dlp)')
+      return
+    } catch (e) {
+      console.log('No Python3 found, downloading binaries...')
+    }
+    
     // Detect platform
     const platform = process.platform
     const arch = process.arch

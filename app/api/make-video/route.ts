@@ -11,10 +11,12 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
-// Binary paths - will be downloaded at runtime on Vercel
+// Binary paths - will be downloaded at runtime on Vercel or use system binaries
 const BIN = {
-  ffmpeg: path.join(process.cwd(), 'bin', 'ffmpeg'),
-  ytdlp:  path.join(process.cwd(), 'bin', 'yt-dlp'),
+  ffmpeg: fs.existsSync(path.join(process.cwd(), 'bin', 'ffmpeg')) ? 
+          path.join(process.cwd(), 'bin', 'ffmpeg') : 'ffmpeg',
+  ytdlp:  fs.existsSync(path.join(process.cwd(), 'bin', 'yt-dlp')) ? 
+          path.join(process.cwd(), 'bin', 'yt-dlp') : 'yt-dlp',
 }
 const FONT = path.join(process.cwd(), 'assets', 'font.ttf')
 

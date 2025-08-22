@@ -8,6 +8,6 @@
     "env": {
       "NODE_ENV": "production"
     }
-  }
-
+  },
+  "buildCommand": "yum install -y python3 python3-pip && pip3 install yt-dlp && npm run build"
 }
