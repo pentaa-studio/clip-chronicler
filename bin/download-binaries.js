@@ -24,15 +24,21 @@ async function main() {
     // Create bin directory if it doesn't exist
     execSync('mkdir -p bin')
     
-    // Download yt-dlp
-    await downloadFile(
-      'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp',
-      `${BIN_DIR}/yt-dlp`
-    )
-    
-    // Download ffmpeg (static build) - detect platform
+    // Detect platform
     const platform = process.platform
     const arch = process.arch
+    
+    // Download yt-dlp (standalone binary)
+    let ytdlpUrl
+    if (platform === 'darwin') {
+      ytdlpUrl = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp'
+    } else {
+      ytdlpUrl = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux'
+    }
+    
+    await downloadFile(ytdlpUrl, `${BIN_DIR}/yt-dlp`)
+    
+    // Download ffmpeg (static build) - detect platform
     
     let ffmpegUrl, ffmpegFile
     if (platform === 'darwin') {
