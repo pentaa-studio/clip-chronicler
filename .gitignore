@@ -48,12 +48,21 @@ coverage/
 *.temp
 
 # Binary files (keep them for now as they're needed for the project)
-# Binaries (will be downloaded at build time on Vercel)
-bin/ffmpeg
-bin/yt-dlp
-bin/ffmpeg.tar.xz
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# But ignore any other binary files
+# IDE
+.vscode/
+.idea/
 *.exe
 *.dll
 *.so
