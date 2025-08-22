@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { put } from '@vercel/blob'
+import { Storage } from '@google-cloud/storage'
 import { spawn } from 'child_process'
 import { createWriteStream } from 'fs'
 import { pipeline } from 'stream/promises'
@@ -153,15 +153,20 @@ export async function GET(req: Request) {
     // 5) (Optional) clean re-mux if needed
     await exec(BIN.ffmpeg, ['-i', mixed, '-c','copy','-y', outFile])
 
-    // 6) Upload to Vercel Blob (free)
-    const fileData = await fs.promises.readFile(outFile)
-    const { url } = await put(`trunks/${videoId}-${Date.now()}.mp4`, fileData, {
-      access: 'public',
-      addRandomSuffix: false,
-      contentType: 'video/mp4'
+    // 6) Upload to Google Cloud Storage
+    const storage = new Storage()
+    const bucketName = 'clip-chronicler-videos'
+    const fileName = `trunks/${videoId}-${Date.now()}.mp4`
+    
+    await storage.bucket(bucketName).upload(outFile, {
+      destination: fileName,
+      metadata: {
+        contentType: 'video/mp4',
+      },
     })
 
-    return NextResponse.json({ ok: true, url })
+    const publicUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`
+    return NextResponse.json({ ok: true, url: publicUrl })
   } catch (e:any) {
     return NextResponse.json({ ok:false, error: e.message?.slice(0,500) }, { status: 500 })
   }
