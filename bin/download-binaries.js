@@ -28,12 +28,13 @@ async function main() {
     const platform = process.platform
     const arch = process.arch
     
-    // Download yt-dlp (standalone binary)
+    // Download youtube-dl (better static binary support)
     let ytdlpUrl
     if (platform === 'darwin') {
       ytdlpUrl = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp'
     } else {
-      ytdlpUrl = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux'
+      // Use youtube-dl for better Linux compatibility
+      ytdlpUrl = 'https://github.com/ytdl-org/youtube-dl/releases/latest/download/youtube-dl'
     }
     
     await downloadFile(ytdlpUrl, `${BIN_DIR}/yt-dlp`)
