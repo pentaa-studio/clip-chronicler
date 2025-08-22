@@ -67,6 +67,13 @@ def make_video():
                 }
             }
             
+            # Add cookies if provided
+            if request.args.get('cookies'):
+                cookies_file = os.path.join(temp_dir, 'cookies.txt')
+                with open(cookies_file, 'w') as f:
+                    f.write(request.args.get('cookies'))
+                ydl_opts['cookiefile'] = cookies_file
+            
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(video_url, download=True)
                 video_file = ydl.prepare_filename(info)
@@ -153,6 +160,14 @@ def make_video():
 @app.route('/health')
 def health():
     return jsonify({"status": "healthy"})
+
+@app.route('/test-cookies')
+def test_cookies():
+    """Test endpoint to verify cookies are working"""
+    return jsonify({
+        "message": "Cookies endpoint ready",
+        "usage": "Use ?cookies=YOUR_COOKIES_CONTENT to test YouTube access"
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=False)
