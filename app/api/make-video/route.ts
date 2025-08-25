@@ -8,7 +8,7 @@ import fs from "fs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 60; // 60 secondes pour le plan gratuit
+export const maxDuration = 800; // 800 secondes pour Vercel Pro
 
 // Binary paths - use system binaries on Vercel, local binaries in dev
 const BIN = {
