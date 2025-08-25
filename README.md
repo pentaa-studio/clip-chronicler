@@ -43,6 +43,15 @@ npm i -g vercel
 vercel --prod
 ```
 
+## 🔐 Configuration des variables d'environnement
+
+Pour l'authentification YouTube, configurez ces variables dans Vercel :
+
+- `YOUTUBE_USERNAME` : Votre email/identifiant YouTube
+- `YOUTUBE_PASSWORD` : Votre mot de passe YouTube
+
+**Note** : Ces identifiants sont utilisés pour contourner les restrictions YouTube.
+
 ## 📦 Dépendances
 
 - `yt-dlp==2024.12.13` : Téléchargement YouTube
