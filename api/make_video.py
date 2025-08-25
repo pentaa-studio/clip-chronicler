@@ -74,9 +74,17 @@ class handler(BaseHTTPRequestHandler):
                 # Add authentication - use both cookies and credentials if available
                 if cookies:
                     # Use cookies file
+                    import base64
                     cookies_file = os.path.join(temp_dir, 'cookies.txt')
-                    with open(cookies_file, 'w', encoding='utf-8') as f:
-                        f.write(cookies)
+                    try:
+                        # Try to decode as base64 first
+                        decoded_cookies = base64.b64decode(cookies).decode('utf-8')
+                        with open(cookies_file, 'w', encoding='utf-8') as f:
+                            f.write(decoded_cookies)
+                    except:
+                        # If not base64, use as-is
+                        with open(cookies_file, 'w', encoding='utf-8') as f:
+                            f.write(cookies)
                     ydl_opts['cookiefile'] = cookies_file
                     print(f"🍪 Using cookies file: {cookies_file}")
                 
