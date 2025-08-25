@@ -21,6 +21,7 @@ class handler(BaseHTTPRequestHandler):
             duration = params.get('dur', ['20'])[0]
             text = (params.get('text', ['Chronique Trunks'])[0])[:280]
             dry_run = params.get('dry', ['0'])[0] == '1'
+            cookies = params.get('cookies', [None])[0]
             
             print(f"🚀 API call started - videoId: {video_id}, dry_run: {dry_run}")
             
@@ -66,6 +67,13 @@ class handler(BaseHTTPRequestHandler):
                         'Sec-Fetch-Mode': 'navigate',
                     }
                 }
+                
+                # Add cookies if provided
+                if cookies:
+                    cookies_file = os.path.join(temp_dir, 'cookies.txt')
+                    with open(cookies_file, 'w') as f:
+                        f.write(cookies)
+                    ydl_opts['cookiefile'] = cookies_file
                 
                 try:
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
