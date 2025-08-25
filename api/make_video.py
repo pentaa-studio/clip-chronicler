@@ -62,12 +62,18 @@ class handler(BaseHTTPRequestHandler):
                     'no_check_certificate': True,
                     'no_warnings': True,
                     'extract_flat': False,
-                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                    'user_agent': 'com.google.android.youtube/17.31.35 (Linux; U; Android 11) gzip',
                     'http_headers': {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                        'User-Agent': 'com.google.android.youtube/17.31.35 (Linux; U; Android 11) gzip',
                         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                         'Accept-Language': 'en-us,en;q=0.5',
                         'Sec-Fetch-Mode': 'navigate',
+                    },
+                    'extractor_args': {
+                        'youtube': {
+                            'player_client': ['android'],
+                            'player_skip': ['webpage', 'configs'],
+                        }
                     }
                 }
                 
