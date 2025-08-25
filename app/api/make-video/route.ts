@@ -68,9 +68,9 @@ export async function GET(req: Request) {
       })
     }
 
-    // Create temporary directory
-    const tempDir = path.join(process.cwd(), 'tmp', Date.now().toString())
-    fs.mkdirSync(tempDir, { recursive: true })
+                // Create temporary directory
+            const tempDir = path.join('/tmp', Date.now().toString())
+            fs.mkdirSync(tempDir, { recursive: true })
 
     try {
       console.log(`Working in temporary directory: ${tempDir}`)
