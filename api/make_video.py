@@ -205,3 +205,4 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({
                 "error": str(e)[:500] if str(e) else "Unknown error"
             }).encode())
+# Updated Lun 25 aoû 2025 16:54:06 CEST
