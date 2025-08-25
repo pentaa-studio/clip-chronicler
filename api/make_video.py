@@ -57,11 +57,20 @@ class handler(BaseHTTPRequestHandler):
                 video_url = f"https://www.youtube.com/watch?v={video_id}"
                 
                 try:
-                    # Create YouTube object
+                    # Create YouTube object with custom user agent
                     yt = YouTube(video_url)
+                    yt.bypass_age_gate()
+                    
+                    # Get available streams
+                    streams = yt.streams.filter(progressive=True, file_extension='mp4')
+                    if not streams:
+                        streams = yt.streams.filter(file_extension='mp4')
+                    
+                    if not streams:
+                        raise Exception("No suitable video streams found")
                     
                     # Get the highest resolution stream
-                    stream = yt.streams.get_highest_resolution()
+                    stream = streams.get_highest_resolution()
                     
                     # Download the video
                     video_path = os.path.join(temp_dir, 'video.mp4')
