@@ -157,18 +157,30 @@ class handler(BaseHTTPRequestHandler):
                 print("☁️ Uploading to Vercel Blob...")
                 
                 try:
-                    from vercel_blob import put
+                    import requests
                     
                     # Read the processed video file
                     with open(output_video, 'rb') as f:
                         video_data = f.read()
                     
-                    # Upload to Vercel Blob (synchronous)
-                    blob = put(f"{video_id}-{int(time.time())}.mp4", video_data, {
-                        'access': 'public',
-                    })
+                    # Get Vercel Blob token from environment
+                    blob_token = os.environ.get('BLOB_READ_WRITE_TOKEN')
+                    if not blob_token:
+                        raise Exception("BLOB_READ_WRITE_TOKEN not found in environment")
                     
-                    blob_url = blob.url
+                    # Upload to Vercel Blob via REST API
+                    headers = {
+                        'Authorization': f'Bearer {blob_token}',
+                        'Content-Type': 'application/octet-stream',
+                    }
+                    
+                    filename = f"{video_id}-{int(time.time())}.mp4"
+                    url = f"https://blob.vercel-storage.com/{filename}"
+                    
+                    response = requests.put(url, data=video_data, headers=headers)
+                    response.raise_for_status()
+                    
+                    blob_url = f"https://blob.vercel-storage.com/{filename}"
                     print(f"✅ Upload successful: {blob_url}")
                     
                 except Exception as e:
