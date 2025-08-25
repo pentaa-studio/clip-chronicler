@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/make-video.py": {
+    "api/make_video.py": {
       "maxDuration": 800
     }
   }
