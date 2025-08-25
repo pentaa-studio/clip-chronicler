@@ -21,6 +21,7 @@ class handler(BaseHTTPRequestHandler):
             duration = params.get('dur', ['20'])[0]
             text = (params.get('text', ['Chronique Trunks'])[0])[:280]
             dry_run = params.get('dry', ['0'])[0] == '1'
+            cookies = params.get('cookies', [None])[0]
             
             # Get credentials from environment variables
             username = os.environ.get('YOUTUBE_USERNAME')
@@ -70,13 +71,22 @@ class handler(BaseHTTPRequestHandler):
                     }
                 }
                 
-                # Add authentication if provided
+                # Add authentication - use both cookies and credentials if available
+                if cookies:
+                    # Use cookies file
+                    cookies_file = os.path.join(temp_dir, 'cookies.txt')
+                    with open(cookies_file, 'w', encoding='utf-8') as f:
+                        f.write(cookies)
+                    ydl_opts['cookiefile'] = cookies_file
+                    print(f"🍪 Using cookies file: {cookies_file}")
+                
                 if username and password:
                     ydl_opts['username'] = username
                     ydl_opts['password'] = password
                     print(f"🔐 Using YouTube credentials for: {username}")
-                else:
-                    print("⚠️ No YouTube credentials provided - may hit rate limits")
+                
+                if not cookies and not (username and password):
+                    print("⚠️ No authentication provided - may hit rate limits")
                 
                 try:
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
