@@ -4,10 +4,10 @@ import tempfile
 import json
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
-import yt_dlp
 import requests
 from pathlib import Path
 import time
+from pytube import YouTube
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -52,60 +52,22 @@ class handler(BaseHTTPRequestHandler):
             with tempfile.TemporaryDirectory() as temp_dir:
                 print(f"📁 Temporary directory: {temp_dir}")
                 
-                # 1) Download video with yt-dlp
-                print("📥 Starting YouTube download...")
+                # 1) Download video with Pytube
+                print("📥 Starting YouTube download with Pytube...")
                 video_url = f"https://www.youtube.com/watch?v={video_id}"
                 
-                ydl_opts = {
-                    'outtmpl': os.path.join(temp_dir, 'video.%(ext)s'),
-                    'quiet': True,
-                    'no_check_certificate': True,
-                    'no_warnings': True,
-                    'extract_flat': False,
-                    'user_agent': 'com.google.android.youtube/17.31.35 (Linux; U; Android 11) gzip',
-                    'http_headers': {
-                        'User-Agent': 'com.google.android.youtube/17.31.35 (Linux; U; Android 11) gzip',
-                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                        'Accept-Language': 'en-us,en;q=0.5',
-                        'Sec-Fetch-Mode': 'navigate',
-                    },
-                    'extractor_args': {
-                        'youtube': {
-                            'player_client': ['android'],
-                            'player_skip': ['webpage', 'configs'],
-                        }
-                    }
-                }
-                
-                # Add authentication - use both cookies and credentials if available
-                if cookies:
-                    # Use cookies file
-                    import base64
-                    cookies_file = os.path.join(temp_dir, 'cookies.txt')
-                    try:
-                        # Try to decode as base64 first
-                        decoded_cookies = base64.b64decode(cookies).decode('utf-8')
-                        with open(cookies_file, 'w', encoding='utf-8') as f:
-                            f.write(decoded_cookies)
-                    except:
-                        # If not base64, use as-is
-                        with open(cookies_file, 'w', encoding='utf-8') as f:
-                            f.write(cookies)
-                    ydl_opts['cookiefile'] = cookies_file
-                    print(f"🍪 Using cookies file: {cookies_file}")
-                
-                if username and password:
-                    ydl_opts['username'] = username
-                    ydl_opts['password'] = password
-                    print(f"🔐 Using YouTube credentials for: {username}")
-                
-                if not cookies and not (username and password):
-                    print("⚠️ No authentication provided - may hit rate limits")
-                
                 try:
-                    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                        ydl.download([video_url])
-                    print("✅ YouTube download successful")
+                    # Create YouTube object
+                    yt = YouTube(video_url)
+                    
+                    # Get the highest resolution stream
+                    stream = yt.streams.get_highest_resolution()
+                    
+                    # Download the video
+                    video_path = os.path.join(temp_dir, 'video.mp4')
+                    stream.download(output_path=temp_dir, filename='video.mp4')
+                    
+                    print(f"✅ YouTube download successful: {yt.title}")
                 except Exception as e:
                     print(f"❌ YouTube download failed: {e}")
                     self.send_response(500)

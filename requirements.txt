@@ -1,2 +1,2 @@
-yt-dlp==2024.12.13
+pytube==15.0.0
 requests==2.31.0
