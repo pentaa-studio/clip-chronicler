@@ -4,7 +4,7 @@
   "framework": "nextjs",
   "functions": {
     "app/api/make-video/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 300
     },
     "app/api/test/route.ts": {
       "maxDuration": 10
