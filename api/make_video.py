@@ -58,7 +58,13 @@ class handler(BaseHTTPRequestHandler):
                 
                 try:
                     # Create YouTube object with custom user agent
-                    yt = YouTube(video_url)
+                    yt = YouTube(
+                        video_url,
+                        use_oauth=False,
+                        allow_oauth_cache=True
+                    )
+                    
+                    # Set custom headers
                     yt.bypass_age_gate()
                     
                     # Get available streams
