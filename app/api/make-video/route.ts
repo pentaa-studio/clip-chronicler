@@ -10,10 +10,25 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 800; // 800 secondes pour Vercel Pro
 
-// Binary paths - use system binaries on Vercel, local binaries in dev
+// Binary paths - download yt-dlp if not available
+async function ensureYtDlp(): Promise<string> {
+  const ytdlpPath = '/tmp/yt-dlp';
+  
+  if (!fs.existsSync(ytdlpPath)) {
+    console.log('📥 Downloading yt-dlp...');
+    const response = await fetch('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp');
+    const buffer = await response.arrayBuffer();
+    fs.writeFileSync(ytdlpPath, Buffer.from(buffer));
+    fs.chmodSync(ytdlpPath, 0o755);
+    console.log('✅ yt-dlp downloaded and made executable');
+  }
+  
+  return ytdlpPath;
+}
+
 const BIN = {
   ffmpeg: "ffmpeg",
-  ytdlp: "yt-dlp",
+  ytdlp: "", // Will be set dynamically
 };
 const FONT = path.join(process.cwd(), "assets", "font.ttf");
 
@@ -86,6 +101,11 @@ export async function GET(req: Request) {
       console.log("📥 Starting YouTube download...");
       const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
       console.log(`🔗 Video URL: ${videoUrl}`);
+      
+      // Ensure yt-dlp is available
+      const ytdlpPath = await ensureYtDlp();
+      console.log(`🔧 Using yt-dlp at: ${ytdlpPath}`);
+      
       const ydlArgs = [
         "--format",
         "best[height<=720]",
@@ -116,9 +136,9 @@ export async function GET(req: Request) {
 
       ydlArgs.push(videoUrl);
 
-      console.log(`⚡ Executing yt-dlp: ${BIN.ytdlp} ${ydlArgs.join(" ")}`);
+      console.log(`⚡ Executing yt-dlp: ${ytdlpPath} ${ydlArgs.join(" ")}`);
       const { success: ydlSuccess, output: ydlOutput } = await exec(
-        BIN.ytdlp,
+        ytdlpPath,
         ydlArgs
       );
       console.log(

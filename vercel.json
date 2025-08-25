@@ -1,5 +1,5 @@
 {
-  "buildCommand": "chmod +x install-binaries.sh && ./install-binaries.sh && npm run build",
+  "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "functions": {
