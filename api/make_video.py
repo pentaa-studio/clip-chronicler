@@ -14,16 +14,8 @@ class handler(BaseHTTPRequestHandler):
     async def download_with_freemake(self, video_url, temp_dir):
         """Download video using Freemake via browser automation"""
         async with async_playwright() as p:
-            # Install browsers if needed
-            try:
-                await p.chromium.launch(headless=True)
-            except Exception as e:
-                print("🔧 Installing Playwright browsers...")
-                import subprocess
-                subprocess.run(["playwright", "install", "chromium"], check=True)
-            
-            # Launch browser
-            browser = await p.chromium.launch(headless=True)
+            # Launch browser with system browser
+            browser = await p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
             page = await browser.new_page()
             
             try:
