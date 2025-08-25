@@ -72,14 +72,11 @@ class handler(BaseHTTPRequestHandler):
                 
                 # Add authentication if provided
                 if username and password:
-                    netrc_file = os.path.join(temp_dir, '.netrc')
-                    with open(netrc_file, 'w', encoding='utf-8') as f:
-                        f.write(f"machine youtube.com\n")
-                        f.write(f"login {username}\n")
-                        f.write(f"password {password}\n")
-                    os.chmod(netrc_file, 0o600)  # Secure permissions
-                    ydl_opts['netrc_location'] = netrc_file
-                    print(f"🔐 Netrc file created: {netrc_file}")
+                    ydl_opts['username'] = username
+                    ydl_opts['password'] = password
+                    print(f"🔐 Using YouTube credentials for: {username}")
+                else:
+                    print("⚠️ No YouTube credentials provided - may hit rate limits")
                 
                 try:
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
