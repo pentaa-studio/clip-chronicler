@@ -15,12 +15,12 @@ async function ensureYtDlp(): Promise<string> {
   const ytdlpPath = '/tmp/yt-dlp';
   
   if (!fs.existsSync(ytdlpPath)) {
-    console.log('📥 Downloading yt-dlp...');
-    const response = await fetch('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp');
+    console.log('📥 Downloading yt-dlp standalone...');
+    const response = await fetch('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux');
     const buffer = await response.arrayBuffer();
     fs.writeFileSync(ytdlpPath, Buffer.from(buffer));
     fs.chmodSync(ytdlpPath, 0o755);
-    console.log('✅ yt-dlp downloaded and made executable');
+    console.log('✅ yt-dlp standalone downloaded and made executable');
   }
   
   return ytdlpPath;
