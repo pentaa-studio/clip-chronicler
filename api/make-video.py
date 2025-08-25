@@ -53,7 +53,7 @@ class handler(BaseHTTPRequestHandler):
                 video_url = f"https://www.youtube.com/watch?v={video_id}"
                 
                 ydl_opts = {
-                    'format': 'best',
+                    'format': 'best[ext=mp4]/best',
                     'outtmpl': os.path.join(temp_dir, 'video.%(ext)s'),
                     'quiet': True,
                     'no_check_certificate': True,
