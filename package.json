@@ -10,24 +10,30 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "@vercel/blob": "^0.22.0",
     "child_process": "^1.0.2",
     "fs": "^0.0.1-security",
+    "next": "^14.0.0",
     "path": "^0.12.7",
-    "stream": "^0.0.2"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "stream": "^0.0.2",
+    "youtube-dl-exec": "^3.0.24"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "typescript": "^5.0.0",
     "eslint": "^8.0.0",
-    "eslint-config-next": "^14.0.0"
+    "eslint-config-next": "^14.0.0",
+    "typescript": "^5.0.0"
   },
-  "keywords": ["youtube", "video", "ffmpeg", "api"],
+  "keywords": [
+    "youtube",
+    "video",
+    "ffmpeg",
+    "api"
+  ],
   "author": "Pentaa Studio",
   "license": "MIT"
 }
