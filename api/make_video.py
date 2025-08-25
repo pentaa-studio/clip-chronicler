@@ -7,64 +7,52 @@ from urllib.parse import urlparse, parse_qs
 import requests
 from pathlib import Path
 import time
-import asyncio
-from playwright.async_api import async_playwright
+import re
 
 class handler(BaseHTTPRequestHandler):
-    async def download_with_freemake(self, video_url, temp_dir):
-        """Download video using Freemake via browser automation"""
-        async with async_playwright() as p:
-            # Launch browser with system browser
-            browser = await p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
-            page = await browser.new_page()
+    def download_with_y2mate(self, video_url, temp_dir):
+        """Download video using Y2Mate service"""
+        try:
+            # Step 1: Get the video info from Y2Mate
+            print("🌐 Getting video info from Y2Mate...")
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
             
-            try:
-                # Navigate to Freemake
-                print("🌐 Navigating to Freemake...")
-                await page.goto("https://www.freemake.com/fr/free_video_downloader_choicest/", timeout=30000)
-                
-                # Wait for page to load
-                await page.wait_for_load_state("networkidle")
-                
-                # Find and fill the URL input
-                print("📝 Entering video URL...")
-                url_input = await page.wait_for_selector('input[type="text"], input[placeholder*="URL"], input[placeholder*="url"]', timeout=10000)
-                await url_input.fill(video_url)
-                
-                # Click analyze/download button
-                print("🔍 Analyzing video...")
-                analyze_button = await page.wait_for_selector('button:has-text("Analyze"), button:has-text("Download"), button:has-text("Télécharger")', timeout=10000)
-                await analyze_button.click()
-                
-                # Wait for analysis to complete
-                await page.wait_for_timeout(5000)
-                
-                # Look for download links
-                print("📥 Looking for download links...")
-                download_links = await page.query_selector_all('a[href*=".mp4"], a[href*="download"], .download-link')
-                
-                if download_links:
-                    # Get the first MP4 link
-                    for link in download_links:
-                        href = await link.get_attribute('href')
-                        if href and '.mp4' in href:
-                            print(f"🔗 Found download link: {href}")
-                            
-                            # Download the file
-                            video_path = os.path.join(temp_dir, 'video.mp4')
-                            response = requests.get(href, stream=True)
-                            with open(video_path, 'wb') as f:
-                                for chunk in response.iter_content(chunk_size=8192):
-                                    f.write(chunk)
-                            
-                            await browser.close()
-                            return video_path
-                
-                raise Exception("No download links found")
-                
-            except Exception as e:
-                await browser.close()
-                raise e
+            # Get the video page
+            response = requests.get(f"https://www.y2mate.com/youtube/{video_url.split('v=')[1]}", headers=headers)
+            
+            if response.status_code != 200:
+                raise Exception(f"Failed to get video info: {response.status_code}")
+            
+            # Extract download links from the page
+            print("🔍 Extracting download links...")
+            content = response.text
+            
+            # Look for MP4 download links
+            mp4_pattern = r'href="([^"]*\.mp4[^"]*)"'
+            mp4_links = re.findall(mp4_pattern, content)
+            
+            if not mp4_links:
+                raise Exception("No MP4 download links found")
+            
+            # Get the first MP4 link
+            download_url = mp4_links[0]
+            print(f"🔗 Found download link: {download_url}")
+            
+            # Download the video
+            print("📥 Downloading video...")
+            video_path = os.path.join(temp_dir, 'video.mp4')
+            response = requests.get(download_url, stream=True, headers=headers)
+            
+            with open(video_path, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            
+            return video_path
+            
+        except Exception as e:
+            raise Exception(f"Y2Mate download failed: {str(e)}")
     
     def do_GET(self):
         try:
@@ -113,14 +101,10 @@ class handler(BaseHTTPRequestHandler):
                 video_url = f"https://www.youtube.com/watch?v={video_id}"
                 
                 try:
-                    # Download video using Playwright with Freemake
-                    print("🌐 Starting browser automation with Freemake...")
+                    # Download video using Y2Mate
+                    print("🌐 Starting Y2Mate download...")
                     
-                    # Run the async download function
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    video_path = loop.run_until_complete(self.download_with_freemake(video_url, temp_dir))
-                    loop.close()
+                    video_path = self.download_with_y2mate(video_url, temp_dir)
                     
                     print(f"✅ Video download successful: {video_path}")
                 except Exception as e:
