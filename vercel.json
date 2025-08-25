@@ -1,13 +1,7 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "framework": "nextjs",
   "functions": {
-    "app/api/make-video/route.ts": {
+    "api/make-video.py": {
       "maxDuration": 800
-    },
-    "app/api/test/route.ts": {
-      "maxDuration": 10
     }
   }
 }
