@@ -57,8 +57,8 @@ class handler(BaseHTTPRequestHandler):
                 video_url = f"https://www.youtube.com/watch?v={video_id}"
                 
                 try:
-                    # Create YouTube object with Pytubefix
-                    yt = YouTube(video_url)
+                    # Create YouTube object with Pytubefix using WEB client
+                    yt = YouTube(video_url, use_oauth=False, allow_oauth_cache=True)
                     
                     # Get the highest resolution stream
                     stream = yt.streams.get_highest_resolution()
