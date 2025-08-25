@@ -10,15 +10,11 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60 // 60 secondes pour le plan gratuit
 
-// Binary paths - use local binaries in dev, system binaries on Vercel
-const BIN = {
-  ffmpeg: process.env.VERCEL ? 'ffmpeg' : 
-          (fs.existsSync(path.join(process.cwd(), 'bin', 'ffmpeg')) ? 
-           path.join(process.cwd(), 'bin', 'ffmpeg') : 'ffmpeg'),
-  ytdlp: process.env.VERCEL ? 'yt-dlp' : 
-         (fs.existsSync(path.join(process.cwd(), 'bin', 'yt-dlp')) ? 
-          path.join(process.cwd(), 'bin', 'yt-dlp') : 'yt-dlp')
-}
+        // Binary paths - use system binaries on Vercel, local binaries in dev
+        const BIN = {
+          ffmpeg: 'ffmpeg',
+          ytdlp: 'yt-dlp'
+        }
 const FONT = path.join(process.cwd(), 'assets', 'font.ttf')
 
 function exec(cmd: string, args: string[]): Promise<{ success: boolean, output: string }> {
