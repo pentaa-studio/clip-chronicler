@@ -1,148 +1,115 @@
 # Clip Chronicler
 
-API Python pour créer des clips vidéo avec overlay texte depuis YouTube.
+API Next.js pour créer des clips vidéo avec overlay texte depuis YouTube.
 
-## Installation
+## 🚀 **Fonctionnalités**
+
+- ✅ Téléchargement d'extraits YouTube avec yt-dlp
+- ✅ Traitement vidéo avec ffmpeg (9:16, overlay texte)
+- ✅ Mode dry-run pour tests
+- ✅ Support des cookies YouTube (optionnel)
+- ✅ Upload vers Vercel Blob
+- ✅ Architecture Next.js optimisée pour Vercel
+
+## 📦 **Installation**
 
 ```bash
-pip install -r requirements.txt
+npm install
 ```
 
-## Démarrage
+## 🏃‍♂️ **Démarrage**
 
 ```bash
-python main.py
+# Développement
+npm run dev
+
+# Production
+npm run build
+npm start
 ```
 
-Le serveur démarre sur `http://localhost:8080`
+Le serveur démarre sur `http://localhost:3001`
 
-## Testing
+## 🧪 **Testing**
 
-### Mode Dry-Run (sans ffmpeg/yt-dlp)
+### Mode Dry-Run (sans traitement)
 
-Pour tester l'endpoint sans exécuter les binaires :
-
-**Local :**
 ```bash
-python main.py
-```
-
-Puis :
-```
-GET http://localhost:8080/api/make-video?videoId=dQw4w9WgXcQ&start=30&dur=20&text=Hello&dry=1
-```
-
-**Production (Google Cloud Run) :**
-```
-GET https://<your-app>.run.app/api/make-video?videoId=dQw4w9WgXcQ&start=30&dur=20&text=Hello&dry=1
+curl "http://localhost:3001/api/make-video?videoId=test&start=0&dur=20&text=Test&dry=1"
 ```
 
 ### Mode Normal (avec traitement complet)
 
-```
-GET http://localhost:8080/api/make-video?videoId=dQw4w9WgXcQ&start=30&dur=20&text=Hello
+```bash
+curl "http://localhost:3001/api/make-video?videoId=VrIjPGNgKg8&start=0&dur=30&text=Chronique%20Trunks"
 ```
 
-### Paramètres
+### Avec Cookies YouTube (optionnel)
+
+```bash
+curl "http://localhost:3001/api/make-video?videoId=VrIjPGKg8&start=0&dur=30&text=Test&cookies=YOUR_COOKIES"
+```
+
+## 📋 **Paramètres**
 
 - `videoId` : ID YouTube (requis)
 - `start` : début en secondes (défaut: 0)
 - `dur` : durée en secondes (défaut: 20)
 - `text` : texte à overlay (défaut: "Chronique Trunks")
-- `voice` : URL audio optionnelle
+- `cookies` : cookies YouTube (optionnel)
 - `dry=1` : mode test (pas d'exécution ffmpeg/yt-dlp)
 
-### Réponse
-
-**Mode normal :**
-```json
-{
-  "ok": true,
-  "url": "https://storage.googleapis.com/clip-chronicler-videos/trunks/..."
-}
-```
-
-**Mode dry-run :**
-```json
-{
-  "ok": true,
-  "url": "blob://dry-run.mp4",
-  "note": "dry-run, no ffmpeg/yt-dlp executed"
-}
-```
-
-## Structure
+## 📁 **Structure**
 
 ```
 clip-chronicler/
-├── main.py                       # Application Flask principale
-├── requirements.txt              # Dépendances Python
-├── Dockerfile                    # Configuration Docker
+├── app/
+│   └── api/
+│       └── make-video/
+│           └── route.ts          # Endpoint principal
+├── bin/
+│   ├── ffmpeg                    # Binaire ffmpeg (dev)
+│   └── yt-dlp                    # Binaire yt-dlp (dev)
 ├── assets/
 │   └── font.ttf                  # Police pour overlay texte
+├── package.json
+├── vercel.json                   # Configuration Vercel
 └── README.md
 ```
 
-## Fonctionnalités
+## 🚀 **Déploiement Vercel**
 
-- ✅ Téléchargement d'extraits YouTube avec yt-dlp
-- ✅ Traitement vidéo avec ffmpeg (9:16, overlay texte)
-- ✅ Mode dry-run pour tests
-- ✅ Upload vers Google Cloud Storage
-- ✅ Gestion des erreurs robuste
-- ✅ Architecture Python pure (plus simple et rapide)
+1. **Connectez votre repository GitHub à Vercel**
+2. **Configurez les variables d'environnement :**
+   - `BLOB_READ_WRITE_TOKEN` : Token Vercel Blob
+3. **Déployez !**
 
-## Déploiement
+L'API sera disponible sur : `https://your-app.vercel.app/api/make-video`
 
-### Google Cloud Platform
+## 💡 **Avantages de cette architecture**
 
-1. **Créer le projet GCP :**
-```bash
-gcloud projects create clip-chronicler-gcp
-gcloud config set project clip-chronicler-gcp
-```
+- 🚀 **Optimisé pour Vercel** : Utilise les binaires système
+- ⚡ **Rapide** : Pas de téléchargement de binaires
+- 🔧 **Simple** : Une seule API route
+- 📦 **Léger** : Dépendances minimales
+- 🛡️ **Robuste** : Gestion d'erreurs complète
 
-2. **Activer les APIs :**
-```bash
-gcloud services enable cloudbuild.googleapis.com
-gcloud services enable run.googleapis.com
-gcloud services enable storage.googleapis.com
-```
-
-3. **Créer le bucket :**
-```bash
-gcloud storage buckets create gs://clip-chronicler-videos --location=us-central1
-```
-
-4. **Déployer :**
-```bash
-gcloud builds submit --config cloudbuild.yaml
-```
-
-### Variables d'environnement
-
-L'application utilise l'authentification par défaut de Google Cloud. Assurez-vous que votre compte a les permissions nécessaires :
-
-- `Storage Object Admin` pour le bucket
-- `Cloud Run Admin` pour le déploiement
-
-## Développement
+## 🔧 **Développement**
 
 ```bash
 # Installer les dépendances
-pip install -r requirements.txt
+npm install
 
 # Démarrer en développement
-python main.py
+npm run dev
 
 # Tester l'API
-curl "http://localhost:8080/health"
+curl "http://localhost:3001/api/make-video?videoId=test&dry=1"
 ```
 
-## Avantages de l'architecture Python
+## 📝 **Notes**
 
-- 🐍 **Plus simple** : Un seul langage pour tout
-- ⚡ **Plus rapide** : Pas de bridge Node.js ↔ Python
-- 📦 **Plus léger** : Moins de dépendances
-- 💰 **Moins cher** : Image Docker plus petite
-- 🔧 **Plus maintenable** : Code plus cohérent
+- Les binaires `ffmpeg` et `yt-dlp` sont automatiquement disponibles sur Vercel
+- En développement local, les binaires dans `bin/` sont utilisés
+- Le mode dry-run permet de tester sans traitement vidéo
+- Les cookies YouTube sont optionnels mais peuvent aider à contourner les blocages
