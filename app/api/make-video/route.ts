@@ -107,9 +107,11 @@ export async function GET(req: Request) {
         console.log("✅ YouTube download successful");
       } catch (error) {
         console.log(`❌ YouTube download failed: ${error}`);
+        console.log(`❌ Error details:`, error);
         return NextResponse.json(
           {
             error: `YouTube download failed: ${error}`,
+            details: error instanceof Error ? error.message : String(error)
           },
           { status: 500 }
         );
