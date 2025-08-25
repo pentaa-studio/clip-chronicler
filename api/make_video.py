@@ -7,7 +7,7 @@ from urllib.parse import urlparse, parse_qs
 import requests
 from pathlib import Path
 import time
-from pytube import YouTube
+from pytubefix import YouTube
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -57,26 +57,11 @@ class handler(BaseHTTPRequestHandler):
                 video_url = f"https://www.youtube.com/watch?v={video_id}"
                 
                 try:
-                    # Create YouTube object with custom user agent
-                    yt = YouTube(
-                        video_url,
-                        use_oauth=False,
-                        allow_oauth_cache=True
-                    )
-                    
-                    # Set custom headers
-                    yt.bypass_age_gate()
-                    
-                    # Get available streams
-                    streams = yt.streams.filter(progressive=True, file_extension='mp4')
-                    if not streams:
-                        streams = yt.streams.filter(file_extension='mp4')
-                    
-                    if not streams:
-                        raise Exception("No suitable video streams found")
+                    # Create YouTube object with Pytubefix
+                    yt = YouTube(video_url)
                     
                     # Get the highest resolution stream
-                    stream = streams.get_highest_resolution()
+                    stream = yt.streams.get_highest_resolution()
                     
                     # Download the video
                     video_path = os.path.join(temp_dir, 'video.mp4')
