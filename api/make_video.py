@@ -57,14 +57,14 @@ class handler(BaseHTTPRequestHandler):
                 video_url = f"https://www.youtube.com/watch?v={video_id}"
                 
                 try:
-                    # Create YouTube object with Pytubefix using PO token
-                    yt = YouTube(video_url, use_po_token=True)
+                    # Create YouTube object with Pytubefix using OAuth
+                    yt = YouTube(video_url, use_oauth=True, allow_oauth_cache=True)
+                    print(f"📺 Video title: {yt.title}")
                     
                     # Get the highest resolution stream
                     stream = yt.streams.get_highest_resolution()
                     
                     # Download the video
-                    video_path = os.path.join(temp_dir, 'video.mp4')
                     stream.download(output_path=temp_dir, filename='video.mp4')
                     
                     print(f"✅ YouTube download successful: {yt.title}")
